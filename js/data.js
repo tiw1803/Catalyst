@@ -1,117 +1,12 @@
 const CatalystData = {
     storageKey: "catalystData",
-
-    defaultData: {
-        user: {
-            name: "Student"
-        },
-
-        xp: 2480,
-
-        tasks: [
-            {
-                id: 1,
-                title: "Complete mathematics revision",
-                subject: "Mathematics",
-                duration: 45,
-                priority: "high",
-                completed: true,
-                date: "2026-08-16"
-            },
-            {
-                id: 2,
-                title: "Read physics chapter 4",
-                subject: "Physics",
-                duration: 30,
-                priority: "medium",
-                completed: true,
-                date: "2026-08-16"
-            },
-            {
-                id: 3,
-                title: "Finish Catalyst UI work",
-                subject: "Personal",
-                duration: 60,
-                priority: "high",
-                completed: false,
-                date: "2026-08-16"
-            },
-            {
-                id: 4,
-                title: "Review chemistry notes",
-                subject: "Chemistry",
-                duration: 25,
-                priority: "low",
-                completed: false,
-                date: "2026-08-16"
-            }
-        ],
-
-        focus: {
-            totalMinutes: 204,
-            totalSessions: 4,
-            todayMinutes: 204,
-            todaySessions: 4
-        },
-
-        streak: {
-            current: 12,
-            best: 18,
-            lastActiveDate: "2026-08-16"
-        },
-
-        exams: [
-            {
-                id: 1,
-                subject: "Mathematics",
-                topic: "Algebra & Trigonometry",
-                date: "2026-08-24"
-            },
-            {
-                id: 2,
-                subject: "Physics",
-                topic: "Mechanics & Motion",
-                date: "2026-08-29"
-            },
-            {
-                id: 3,
-                subject: "Chemistry",
-                topic: "Atoms & Chemical Bonding",
-                date: "2026-09-03"
-            }
-        ]
-    },
-
-    init() {
-        if (!localStorage.getItem(this.storageKey)) {
-            this.save(this.defaultData);
-        }
-    },
-
-    get() {
-        this.init();
-
-        try {
-            return JSON.parse(localStorage.getItem(this.storageKey));
-        } catch (error) {
-            this.save(this.defaultData);
-            return JSON.parse(JSON.stringify(this.defaultData));
-        }
-    },
-
-    save(data) {
-        localStorage.setItem(this.storageKey, JSON.stringify(data));
-    },
-
-    reset() {
-        localStorage.removeItem(this.storageKey);
-        this.init();
-        return this.get();
-    },
+    version: 2,
+    xpPerLevel: 500,
+    xpPerCompletedTask: 25,
+    listeners: new Set(),
 
     getTodayDate() {
         const date = new Date();
-
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, "0");
         const day = String(date.getDate()).padStart(2, "0");
@@ -119,10 +14,288 @@ const CatalystData = {
         return `${year}-${month}-${day}`;
     },
 
-    getTasks(date = this.getTodayDate()) {
+    createDefaultData() {
+        const today = this.getTodayDate();
+
+        return {
+            version: this.version,
+            user: {
+                name: "Student"
+            },
+            xp: 2480,
+            tasks: [
+                {
+                    id: 1,
+                    title: "Complete mathematics revision",
+                    subject: "Mathematics",
+                    duration: 45,
+                    priority: "high",
+                    completed: true,
+                    date: today
+                },
+                {
+                    id: 2,
+                    title: "Read physics chapter 4",
+                    subject: "Physics",
+                    duration: 30,
+                    priority: "medium",
+                    completed: true,
+                    date: today
+                },
+                {
+                    id: 3,
+                    title: "Finish Catalyst UI work",
+                    subject: "Personal",
+                    duration: 60,
+                    priority: "high",
+                    completed: false,
+                    date: today
+                },
+                {
+                    id: 4,
+                    title: "Review chemistry notes",
+                    subject: "Chemistry",
+                    duration: 25,
+                    priority: "low",
+                    completed: false,
+                    date: today
+                }
+            ],
+            xpEvents: [
+                {
+                    id: "seed-daily-xp",
+                    amount: 50,
+                    date: today,
+                    sourceType: "task",
+                    sourceId: "seed"
+                }
+            ],
+            focusSessions: [
+                { id: "seed-focus-one", minutes: 60, date: today },
+                { id: "seed-focus-two", minutes: 48, date: today },
+                { id: "seed-focus-three", minutes: 51, date: today },
+                { id: "seed-focus-four", minutes: 45, date: today }
+            ],
+            streak: {
+                current: 12,
+                best: 18,
+                lastActiveDate: today
+            },
+            exams: [
+                {
+                    id: 1,
+                    subject: "Mathematics",
+                    topic: "Algebra & Trigonometry",
+                    date: "2026-08-24"
+                },
+                {
+                    id: 2,
+                    subject: "Physics",
+                    topic: "Mechanics & Motion",
+                    date: "2026-08-29"
+                },
+                {
+                    id: 3,
+                    subject: "Chemistry",
+                    topic: "Atoms & Chemical Bonding",
+                    date: "2026-09-03"
+                }
+            ]
+        };
+    },
+
+    clone(value) {
+        return JSON.parse(JSON.stringify(value));
+    },
+
+    readStoredData() {
+        const storedData = localStorage.getItem(this.storageKey);
+
+        if (!storedData) {
+            return null;
+        }
+
+        try {
+            return JSON.parse(storedData);
+        } catch {
+            localStorage.removeItem(this.storageKey);
+            return null;
+        }
+    },
+
+    write(data) {
+        localStorage.setItem(this.storageKey, JSON.stringify(data));
+    },
+
+    isLegacyDemoTasks(tasks) {
+        const titles = [
+            "Complete mathematics revision",
+            "Read physics chapter 4",
+            "Finish Catalyst UI work",
+            "Review chemistry notes"
+        ];
+
+        return tasks.length === titles.length && tasks.every((task, index) =>
+            task.id === index + 1 && task.title === titles[index]
+        );
+    },
+
+    normalize(data) {
+        const fallback = this.createDefaultData();
+        const today = this.getTodayDate();
+        const tasks = Array.isArray(data?.tasks)
+            ? data.tasks.map(task => ({ ...task }))
+            : fallback.tasks;
+
+        if (
+            this.isLegacyDemoTasks(tasks) &&
+            !tasks.some(task => task.date === today)
+        ) {
+            tasks.forEach(task => {
+                task.date = today;
+            });
+        }
+
+        const legacyFocus = data?.focus || {};
+        const focusSessions = Array.isArray(data?.focusSessions)
+            ? data.focusSessions.map(session => ({ ...session }))
+            : this.createLegacyFocusSessions(legacyFocus, today);
+
+        const xpEvents = Array.isArray(data?.xpEvents)
+            ? data.xpEvents.map(event => ({ ...event }))
+            : this.createLegacyXPEvents(tasks, today);
+
+        return {
+            version: this.version,
+            user: {
+                ...fallback.user,
+                ...(data?.user || {})
+            },
+            xp: Math.max(0, Number(data?.xp) || 0),
+            tasks,
+            xpEvents,
+            focusSessions,
+            streak: {
+                ...fallback.streak,
+                ...(data?.streak || {})
+            },
+            exams: Array.isArray(data?.exams)
+                ? data.exams.map(exam => ({ ...exam }))
+                : fallback.exams
+        };
+    },
+
+    createLegacyFocusSessions(focus, today) {
+        const totalMinutes = Math.max(0, Number(focus.totalMinutes) || 0);
+        const todayMinutes = Math.min(
+            totalMinutes,
+            Math.max(0, Number(focus.todayMinutes) || 0)
+        );
+        const sessions = [];
+
+        if (totalMinutes > todayMinutes) {
+            sessions.push({
+                id: "legacy-focus-history",
+                minutes: totalMinutes - todayMinutes,
+                date: "1970-01-01"
+            });
+        }
+
+        if (todayMinutes > 0) {
+            sessions.push({
+                id: "legacy-focus-today",
+                minutes: todayMinutes,
+                date: today
+            });
+        }
+
+        return sessions;
+    },
+
+    createLegacyXPEvents(tasks, today) {
+        const dailyCompletedTasks = tasks.filter(task =>
+            task.date === today && task.completed
+        ).length;
+
+        if (!dailyCompletedTasks) {
+            return [];
+        }
+
+        return [{
+            id: "legacy-daily-xp",
+            amount: dailyCompletedTasks * this.xpPerCompletedTask,
+            date: today,
+            sourceType: "task",
+            sourceId: "legacy"
+        }];
+    },
+
+    init() {
+        const storedData = this.readStoredData();
+        const normalizedData = this.normalize(
+            storedData || this.createDefaultData()
+        );
+
+        if (
+            !storedData ||
+            JSON.stringify(storedData) !== JSON.stringify(normalizedData)
+        ) {
+            this.write(normalizedData);
+        }
+
+        return this.clone(normalizedData);
+    },
+
+    get() {
+        return this.init();
+    },
+
+    save(data) {
+        const normalizedData = this.normalize(data);
+
+        this.write(normalizedData);
+        this.notify(normalizedData);
+
+        return this.clone(normalizedData);
+    },
+
+    update(mutator) {
         const data = this.get();
 
-        return data.tasks.filter(task => task.date === date);
+        mutator(data);
+
+        return this.save(data);
+    },
+
+    reset() {
+        const data = this.createDefaultData();
+
+        this.write(data);
+        this.notify(data);
+
+        return this.clone(data);
+    },
+
+    subscribe(listener) {
+        this.listeners.add(listener);
+
+        return () => this.listeners.delete(listener);
+    },
+
+    notify(data) {
+        const stats = this.getStatsFromData(data);
+
+        this.listeners.forEach(listener => listener(stats));
+
+        window.dispatchEvent(
+            new CustomEvent("catalyst:datachange", {
+                detail: stats
+            })
+        );
+    },
+
+    getTasks(date = this.getTodayDate()) {
+        return this.get().tasks.filter(task => task.date === date);
     },
 
     getCompletedTasks(date = this.getTodayDate()) {
@@ -136,156 +309,234 @@ const CatalystData = {
     getDailyProgress(date = this.getTodayDate()) {
         const tasks = this.getTasks(date);
 
-        if (tasks.length === 0) {
+        if (!tasks.length) {
             return 0;
         }
 
-        const completed = tasks.filter(task => task.completed).length;
-
-        return Math.round((completed / tasks.length) * 100);
+        return Math.round(
+            (tasks.filter(task => task.completed).length / tasks.length) * 100
+        );
     },
 
-    getLevel() {
-        const data = this.get();
-
-        return Math.floor(data.xp / 500) + 1;
+    getLevelFromXP(xp) {
+        return Math.floor(xp / this.xpPerLevel) + 1;
     },
 
-    getCurrentLevelXP() {
-        const data = this.get();
-        const level = this.getLevel();
+    getStatsFromData(data) {
+        const today = this.getTodayDate();
+        const todayTasks = data.tasks.filter(task => task.date === today);
+        const completedTasks = todayTasks.filter(task => task.completed).length;
+        const totalTasks = todayTasks.length;
+        const dailyProgress = totalTasks
+            ? Math.round((completedTasks / totalTasks) * 100)
+            : 0;
+        const totalFocusMinutes = data.focusSessions.reduce(
+            (total, session) => total + Math.max(0, Number(session.minutes) || 0),
+            0
+        );
+        const todayFocusSessions = data.focusSessions.filter(
+            session => session.date === today
+        );
+        const todayFocusMinutes = todayFocusSessions.reduce(
+            (total, session) => total + Math.max(0, Number(session.minutes) || 0),
+            0
+        );
+        const dailyXPEarned = data.xpEvents
+            .filter(event => event.date === today)
+            .reduce(
+                (total, event) => total + Math.max(0, Number(event.amount) || 0),
+                0
+            );
+        const level = this.getLevelFromXP(data.xp);
+        const currentLevelStartXP = (level - 1) * this.xpPerLevel;
+        const nextLevelXP = level * this.xpPerLevel;
 
-        return data.xp - ((level - 1) * 500);
+        return {
+            currentXP: data.xp,
+            xp: data.xp,
+            level,
+            currentLevelXP: data.xp - currentLevelStartXP,
+            xpRequiredForNextLevel: nextLevelXP,
+            xpRequiredForLevel: this.xpPerLevel,
+            xpUntilNextLevel: Math.max(0, nextLevelXP - data.xp),
+            dailyXPEarned,
+            currentStreak: data.streak.current,
+            longestStreak: data.streak.best,
+            streak: data.streak.current,
+            bestStreak: data.streak.best,
+            totalFocusMinutes,
+            todayFocusMinutes,
+            focusMinutes: todayFocusMinutes,
+            todayFocusSessions: todayFocusSessions.length,
+            totalGoalsToday: totalTasks,
+            goalsCompletedToday: completedTasks,
+            totalTasks,
+            completedTasks,
+            remainingTasks: totalTasks - completedTasks,
+            dailyProgress,
+            progressRingPercentage: dailyProgress
+        };
     },
 
-    getXPRequiredForLevel() {
-        return 500;
+    getStats() {
+        return this.getStatsFromData(this.get());
     },
 
-    getXPUntilNextLevel() {
-        const currentXP = this.getCurrentLevelXP();
+    recordXPGain(data, amount, sourceType, sourceId) {
+        const earnedXP = Math.max(0, Number(amount) || 0);
 
-        return 500 - currentXP;
+        if (!earnedXP) {
+            return;
+        }
+
+        data.xp += earnedXP;
+        data.xpEvents.push({
+            id: `${sourceType}-${sourceId}-${Date.now()}`,
+            amount: earnedXP,
+            date: this.getTodayDate(),
+            sourceType,
+            sourceId: String(sourceId)
+        });
+    },
+
+    setXP(amount) {
+        return this.update(data => {
+            data.xp = Math.max(0, Number(amount) || 0);
+        });
+    },
+
+    awardXP(amount, sourceType = "manual", sourceId = Date.now()) {
+        return this.update(data => {
+            this.recordXPGain(data, amount, sourceType, sourceId);
+            this.applyActivityToStreak(data);
+        });
     },
 
     completeTask(taskId) {
-        const data = this.get();
+        return this.update(data => {
+            const task = data.tasks.find(task => task.id === taskId);
 
-        const task = data.tasks.find(task => task.id === taskId);
+            if (!task || task.completed) {
+                return;
+            }
 
-        if (!task || task.completed) {
-            return data;
-        }
-
-        task.completed = true;
-
-        data.xp += 25;
-
-        this.updateStreak();
-
-        this.save(data);
-
-        return data;
+            task.completed = true;
+            this.recordXPGain(
+                data,
+                this.xpPerCompletedTask,
+                "task",
+                task.id
+            );
+            this.applyActivityToStreak(data);
+        });
     },
 
     uncompleteTask(taskId) {
-        const data = this.get();
+        return this.update(data => {
+            const task = data.tasks.find(task => task.id === taskId);
 
-        const task = data.tasks.find(task => task.id === taskId);
+            if (!task || !task.completed) {
+                return;
+            }
 
-        if (!task || !task.completed) {
-            return data;
-        }
+            task.completed = false;
 
-        task.completed = false;
+            const eventIndex = data.xpEvents.findIndex(event =>
+                event.sourceType === "task" &&
+                event.sourceId === String(task.id)
+            );
 
-        data.xp = Math.max(0, data.xp - 25);
-
-        this.save(data);
-
-        return data;
+            if (eventIndex !== -1) {
+                const [event] = data.xpEvents.splice(eventIndex, 1);
+                data.xp = Math.max(0, data.xp - event.amount);
+            }
+        });
     },
 
     addTask(task) {
-        const data = this.get();
+        let newTask;
 
-        const newTask = {
-            id: Date.now(),
-            title: task.title || "New task",
-            subject: task.subject || "General",
-            duration: task.duration || 0,
-            priority: task.priority || "medium",
-            completed: false,
-            date: task.date || this.getTodayDate()
-        };
+        this.update(data => {
+            newTask = {
+                id: Date.now(),
+                title: task.title || "New task",
+                subject: task.subject || "General",
+                duration: Math.max(0, Number(task.duration) || 0),
+                priority: task.priority || "medium",
+                completed: false,
+                date: task.date || this.getTodayDate()
+            };
 
-        data.tasks.push(newTask);
-
-        this.save(data);
+            data.tasks.push(newTask);
+        });
 
         return newTask;
     },
 
     deleteTask(taskId) {
-        const data = this.get();
-
-        data.tasks = data.tasks.filter(task => task.id !== taskId);
-
-        this.save(data);
-
-        return data;
+        return this.update(data => {
+            data.tasks = data.tasks.filter(task => task.id !== taskId);
+            data.xpEvents = data.xpEvents.filter(event =>
+                !(
+                    event.sourceType === "task" &&
+                    event.sourceId === String(taskId)
+                )
+            );
+        });
     },
 
     addFocusSession(minutes) {
-        const data = this.get();
-
         const sessionMinutes = Math.max(0, Number(minutes) || 0);
 
-        data.focus.totalMinutes += sessionMinutes;
-        data.focus.todayMinutes += sessionMinutes;
+        if (!sessionMinutes) {
+            return this.get();
+        }
 
-        data.focus.totalSessions += 1;
-        data.focus.todaySessions += 1;
+        return this.update(data => {
+            const sessionId = Date.now();
 
-        data.xp += Math.floor(sessionMinutes / 5) * 2;
+            data.focusSessions.push({
+                id: sessionId,
+                minutes: sessionMinutes,
+                date: this.getTodayDate()
+            });
 
-        this.updateStreak();
-
-        this.save(data);
-
-        return data;
+            this.recordXPGain(
+                data,
+                Math.floor(sessionMinutes / 5) * 2,
+                "focus",
+                sessionId
+            );
+            this.applyActivityToStreak(data);
+        });
     },
 
     resetTodayFocus() {
-        const data = this.get();
+        const today = this.getTodayDate();
 
-        data.focus.todayMinutes = 0;
-        data.focus.todaySessions = 0;
-
-        this.save(data);
-
-        return data;
+        return this.update(data => {
+            data.focusSessions = data.focusSessions.filter(
+                session => session.date !== today
+            );
+        });
     },
 
-    updateStreak() {
-        const data = this.get();
+    applyActivityToStreak(data) {
         const today = this.getTodayDate();
-        const lastActive = data.streak.lastActiveDate;
+        const lastActiveDate = data.streak.lastActiveDate;
 
-        if (lastActive === today) {
-            return data;
+        if (lastActiveDate === today) {
+            return;
         }
 
-        if (!lastActive) {
+        if (!lastActiveDate) {
             data.streak.current = 1;
         } else {
-            const lastDate = new Date(`${lastActive}T00:00:00`);
+            const lastActive = new Date(`${lastActiveDate}T00:00:00`);
             const currentDate = new Date(`${today}T00:00:00`);
-
-            const difference =
-                Math.round(
-                    (currentDate - lastDate) / (1000 * 60 * 60 * 24)
-                );
+            const difference = Math.round(
+                (currentDate - lastActive) / (1000 * 60 * 60 * 24)
+            );
 
             if (difference === 1) {
                 data.streak.current += 1;
@@ -294,43 +545,25 @@ const CatalystData = {
             }
         }
 
-        data.streak.best = Math.max(
-            data.streak.best,
-            data.streak.current
-        );
-
+        data.streak.best = Math.max(data.streak.best, data.streak.current);
         data.streak.lastActiveDate = today;
-
-        this.save(data);
-
-        return data;
     },
 
-    getStats() {
-        const data = this.get();
-        const todayTasks = this.getTasks();
-
-        return {
-            xp: data.xp,
-            level: this.getLevel(),
-            currentLevelXP: this.getCurrentLevelXP(),
-            xpRequiredForLevel: this.getXPRequiredForLevel(),
-            xpUntilNextLevel: this.getXPUntilNextLevel(),
-
-            streak: data.streak.current,
-            bestStreak: data.streak.best,
-
-            focusMinutes: data.focus.todayMinutes,
-            focusSessions: data.focus.todaySessions,
-            totalFocusMinutes: data.focus.totalMinutes,
-            totalFocusSessions: data.focus.totalSessions,
-
-            totalTasks: todayTasks.length,
-            completedTasks: todayTasks.filter(task => task.completed).length,
-            remainingTasks: todayTasks.filter(task => !task.completed).length,
-            dailyProgress: this.getDailyProgress()
-        };
+    updateStreak() {
+        return this.update(data => {
+            this.applyActivityToStreak(data);
+        });
     }
 };
+
+window.addEventListener("storage", event => {
+    if (event.key === CatalystData.storageKey) {
+        const data = CatalystData.readStoredData();
+
+        if (data) {
+            CatalystData.notify(CatalystData.normalize(data));
+        }
+    }
+});
 
 CatalystData.init();

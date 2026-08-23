@@ -216,7 +216,7 @@
 
                         <div class="dashboard-nav-profile-info">
                             <strong>Student</strong>
-                            <span>Level 12</span>
+                            <span data-dashboard-nav-level>Level 12</span>
                         </div>
 
                     </a>
@@ -266,8 +266,8 @@
 
                         <div class="dashboard-stat-content">
                             <span class="dashboard-stat-label">XP</span>
-                            <strong>2,480</strong>
-                            <small>+180 this week</small>
+                            <strong data-dashboard-current-xp>2,480</strong>
+                            <small data-dashboard-daily-xp>+180 this week</small>
                         </div>
 
                     </article>
@@ -283,8 +283,8 @@
 
                         <div class="dashboard-stat-content">
                             <span class="dashboard-stat-label">Streak</span>
-                            <strong>12 days</strong>
-                            <small>Personal best: 18</small>
+                            <strong data-dashboard-current-streak>12 days</strong>
+                            <small data-dashboard-longest-streak>Personal best: 18</small>
                         </div>
 
                     </article>
@@ -300,8 +300,8 @@
 
                         <div class="dashboard-stat-content">
                             <span class="dashboard-stat-label">Focus Time</span>
-                            <strong>3h 24m</strong>
-                            <small>Today</small>
+                            <strong data-dashboard-today-focus>3h 24m</strong>
+                            <small data-dashboard-total-focus>Today</small>
                         </div>
 
                     </article>
@@ -317,8 +317,8 @@
 
                         <div class="dashboard-stat-content">
                             <span class="dashboard-stat-label">Tasks</span>
-                            <strong>8 / 10</strong>
-                            <small>80% completed</small>
+                            <strong data-dashboard-goals>8 / 10</strong>
+                            <small data-dashboard-progress-summary>80% completed</small>
                         </div>
 
                     </article>
@@ -342,7 +342,7 @@
                                     </h3>
                                 </div>
 
-                                <span class="dashboard-progress-percent">
+                                <span class="dashboard-progress-percent" data-dashboard-progress-percent>
                                     80%
                                 </span>
 
@@ -350,7 +350,7 @@
 
                             <div class="daily-progress-body">
 
-                                <div class="progress-circle" aria-label="80 percent complete">
+                                <div class="progress-circle" data-dashboard-progress-ring aria-label="80 percent complete">
                                     <svg viewBox="0 0 120 120" aria-hidden="true">
                                         <circle class="progress-circle-track" cx="60" cy="60" r="50"></circle>
                                         <circle class="progress-circle-value" cx="60" cy="60" r="50" pathLength="100">
@@ -358,7 +358,7 @@
                                     </svg>
 
                                     <div class="progress-circle-content">
-                                        <strong>80%</strong>
+                                        <strong data-dashboard-progress-value>80%</strong>
                                         <span>Complete</span>
                                     </div>
                                 </div>
@@ -368,7 +368,7 @@
                                     <div class="progress-detail">
                                         <span class="progress-detail-dot completed"></span>
                                         <div>
-                                            <strong>8 completed</strong>
+                                            <strong data-dashboard-goals-completed>8 completed</strong>
                                             <span>Tasks finished today</span>
                                         </div>
                                     </div>
@@ -376,7 +376,7 @@
                                     <div class="progress-detail">
                                         <span class="progress-detail-dot remaining"></span>
                                         <div>
-                                            <strong>2 remaining</strong>
+                                            <strong data-dashboard-goals-remaining>2 remaining</strong>
                                             <span>Tasks left for today</span>
                                         </div>
                                     </div>
@@ -384,8 +384,8 @@
                                     <div class="progress-detail">
                                         <span class="progress-detail-dot focus"></span>
                                         <div>
-                                            <strong>3h 24m focused</strong>
-                                            <span>Across 4 sessions</span>
+                                            <strong data-dashboard-focus-detail>3h 24m focused</strong>
+                                            <span data-dashboard-focus-sessions>Across 4 sessions</span>
                                         </div>
                                     </div>
 
@@ -600,7 +600,7 @@
                                     <span class="dashboard-card-eyebrow">
                                         Level Progress
                                     </span>
-                                    <h3 class="dashboard-card-title">
+                                    <h3 class="dashboard-card-title" data-dashboard-level-title>
                                         Level 12
                                     </h3>
                                 </div>
@@ -616,15 +616,15 @@
                             <div class="xp-progress">
 
                                 <div class="xp-progress-label">
-                                    <span>2,480 XP</span>
-                                    <span>3,000 XP</span>
+                                    <span data-dashboard-level-current-xp>2,480 XP</span>
+                                    <span data-dashboard-next-level-xp>3,000 XP</span>
                                 </div>
 
                                 <div class="xp-progress-track">
                                     <span class="xp-progress-value"></span>
                                 </div>
 
-                                <small>
+                                <small data-dashboard-xp-to-next>
                                     520 XP until Level 13
                                 </small>
 
@@ -648,7 +648,7 @@
                                     <span class="dashboard-card-eyebrow">
                                         Current Streak
                                     </span>
-                                    <strong>12</strong>
+                                    <strong data-dashboard-streak-value>12</strong>
                                     <span>days</span>
                                 </div>
 
@@ -896,9 +896,9 @@
     </div>
 
     <script src="../js/theme.js"></script>
+    <script src="../js/data.js"></script>
     <script src="../js/dashboard.js"></script>
     <script src="../js/animations.js"></script>
-    <script src="../js/data.js"></script>
 </body>
 
 </html>
