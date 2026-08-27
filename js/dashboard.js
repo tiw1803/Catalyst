@@ -13,7 +13,7 @@ const CatalystDashboard = {
 
     setupDataSubscription() {
         CatalystData.subscribe(stats => {
-            this.render(stats);
+            thi.render(stats);
         });
     },
 
@@ -31,7 +31,7 @@ const CatalystDashboard = {
         }
 
         menuToggle.addEventListener("click", () => {
-            const collapsed = sidebar.classList.toggle("collapsed");
+            const collapsed = sidebar.classList.toggle("is-collapsed");
 
             menuToggle.setAttribute(
                 "aria-expanded",
