@@ -1303,17 +1303,17 @@
     color: var(--primary-light);
 }
 
-.dashboard-sidebar.is-collapsed {
+.dashboard-sidebar.collapsed {
     width: var(--dashboard-sidebar-collapsed-width);
 }
 
-.dashboard-sidebar.is-collapsed .sidebar-logo {
+.dashboard-sidebar.collapsed .sidebar-logo {
     position: relative;
     justify-content: flex-start;
     padding: 0 10px;
 }
 
-.dashboard-sidebar.is-collapsed .dashboard-brand {
+.dashboard-sidebar.collapsed .dashboard-brand {
     width: 18px;
     height: 28px;
     display: flex;
@@ -1323,11 +1323,11 @@
     font-size: 0;
 }
 
-.dashboard-sidebar.is-collapsed .dashboard-brand > span {
+.dashboard-sidebar.collapsed .dashboard-brand > span {
     display: none;
 }
 
-.dashboard-sidebar.is-collapsed .dashboard-brand::after {
+.dashboard-sidebar.collapsed .dashboard-brand::after {
     content: "C";
     display: block;
     color: var(--text);
@@ -1336,7 +1336,7 @@
     line-height: 1;
 }
 
-.dashboard-sidebar.is-collapsed .dashboard-menu-toggle {
+.dashboard-sidebar.collapsed .dashboard-menu-toggle {
     position: absolute;
     top: 50%;
     right: 10px;
@@ -1345,51 +1345,51 @@
     height: 34px;
 }
 
-.dashboard-sidebar.is-collapsed .sidebar-nav-label,
-.dashboard-sidebar.is-collapsed .sidebar-link span,
-.dashboard-sidebar.is-collapsed .sidebar-profile-info,
-.dashboard-sidebar.is-collapsed .sidebar-profile-arrow {
+.dashboard-sidebar.collapsed .sidebar-nav-label,
+.dashboard-sidebar.collapsed .sidebar-link span,
+.dashboard-sidebar.collapsed .sidebar-profile-info,
+.dashboard-sidebar.collapsed .sidebar-profile-arrow {
     opacity: 0;
     width: 0;
     overflow: hidden;
     pointer-events: none;
 }
 
-.dashboard-sidebar.is-collapsed .sidebar-link {
+.dashboard-sidebar.collapsed .sidebar-link {
     justify-content: center;
     padding-inline: 0;
 }
 
-.dashboard-sidebar.is-collapsed .sidebar-link svg {
+.dashboard-sidebar.collapsed .sidebar-link svg {
     flex-shrink: 0;
 }
 
-.dashboard-sidebar.is-collapsed .sidebar-profile {
+.dashboard-sidebar.collapsed .sidebar-profile {
     justify-content: center;
 }
 
-.dashboard-sidebar.is-collapsed .sidebar-bottom {
+.dashboard-sidebar.collapsed .sidebar-bottom {
     padding-inline: 0.75rem;
 }
 
-.dashboard-app:has(.dashboard-sidebar.is-collapsed) .dashboard-main {
+.dashboard-app:has(.dashboard-sidebar.collapsed) .dashboard-main {
     width: calc(100% - var(--dashboard-sidebar-collapsed-width));
     margin-left: var(--dashboard-sidebar-collapsed-width);
 }
 
-.dashboard-app:has(.dashboard-sidebar.is-collapsed) .dashboard-content {
+.dashboard-app:has(.dashboard-sidebar.collapsed) .dashboard-content {
     max-width: 1700px;
 }
 
-.dashboard-app:has(.dashboard-sidebar.is-collapsed) .dashboard-grid {
+.dashboard-app:has(.dashboard-sidebar.collapsed) .dashboard-grid {
     grid-template-columns: minmax(0, 1.65fr) minmax(320px, 0.85fr);
 }
 
-.dashboard-app:has(.dashboard-sidebar.is-collapsed) .dashboard-stats {
+.dashboard-app:has(.dashboard-sidebar.collapsed) .dashboard-stats {
     grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
-.dashboard-app:has(.dashboard-sidebar.is-collapsed) .quick-action-grid {
+.dashboard-app:has(.dashboard-sidebar.collapsed) .quick-action-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
@@ -1430,29 +1430,29 @@
         transform: translateX(0);
     }
 
-    .dashboard-sidebar.is-collapsed {
+    .dashboard-sidebar.collapsed {
         width: var(--dashboard-sidebar-width);
     }
 
-    .dashboard-sidebar.is-collapsed .sidebar-logo {
+    .dashboard-sidebar.collapsed .sidebar-logo {
         padding: 0 20px 0 28px;
     }
 
-    .dashboard-sidebar.is-collapsed .dashboard-brand {
+    .dashboard-sidebar.collapsed .dashboard-brand {
         width: auto;
         height: auto;
         font-size: 1.45rem;
     }
 
-    .dashboard-sidebar.is-collapsed .dashboard-brand > span {
+    .dashboard-sidebar.collapsed .dashboard-brand > span {
         display: inline;
     }
 
-    .dashboard-sidebar.is-collapsed .dashboard-brand::after {
+    .dashboard-sidebar.collapsed .dashboard-brand::after {
         display: none;
     }
 
-    .dashboard-sidebar.is-collapsed .dashboard-menu-toggle {
+    .dashboard-sidebar.collapsed .dashboard-menu-toggle {
         position: static;
         transform: none;
         width: 42px;
@@ -1464,7 +1464,7 @@
         margin-left: 0;
     }
 
-    .dashboard-app:has(.dashboard-sidebar.is-collapsed) .dashboard-main {
+    .dashboard-app:has(.dashboard-sidebar.collapsed) .dashboard-main {
         width: 100%;
         margin-left: 0;
     }
