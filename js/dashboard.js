@@ -31,7 +31,7 @@ const CatalystDashboard = {
         }
 
         menuToggle.addEventListener("click", () => {
-            const collapsed = sidebar.classList.toggle("is-collapsed");
+            const collapsed = sidebar.classList.toggle("collapsed");
 
             menuToggle.setAttribute(
                 "aria-expanded",
