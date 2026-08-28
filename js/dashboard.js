@@ -13,7 +13,7 @@ const CatalystDashboard = {
 
     setupDataSubscription() {
         CatalystData.subscribe(stats => {
-            thi.render(stats);
+            this.render(stats);
         });
     },
 
