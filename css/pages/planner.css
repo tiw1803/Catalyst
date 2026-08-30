@@ -93,18 +93,19 @@
 .planner-layout {
     display: grid;
     grid-template-columns: minmax(0, 1.7fr) minmax(280px, 0.8fr);
+    grid-template-rows: auto auto;
     gap: 20px;
     align-items: start;
 }
 
-.planner-main-card {
-    min-width: 0;
+.planner-exams-section {
+    grid-column: 1;
+    grid-row: 2;
 }
 
 .planner-side-column {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+    grid-column: 2;
+    grid-row: 1 / span 2;
 }
 
 .planner-toolbar {
@@ -793,8 +794,10 @@ body.modal-open {
         grid-template-columns: 1fr;
     }
 }
+
 .planner-exams-section {
-    margin-top: 20px;
+    width: 100%;
+    margin-top: 28px;
     padding: 24px;
     background: var(--card-bg);
     border: 1px solid var(--card-border);
@@ -802,16 +805,19 @@ body.modal-open {
     box-shadow: var(--card-shadow);
 }
 
-.planner-section-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-    margin-bottom: 20px;
+.planner-exams-section .planner-section-header {
+    position: relative;
+    justify-content: center;
+    text-align: center;
 }
 
-.planner-section-header > div {
-    min-width: 0;
+.planner-exams-section .planner-section-header>div {
+    text-align: center;
+}
+
+.planner-exams-section .planner-add-exam-button {
+    position: absolute;
+    right: 0;
 }
 
 .section-eyebrow {
@@ -1053,4 +1059,23 @@ body.modal-open {
         flex-direction: column;
         text-align: center;
     }
+}
+
+.planner-bottom-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.7fr) minmax(280px, 0.8fr);
+    gap: 20px;
+    align-items: start;
+    margin-top: 20px;
+}
+
+.planner-exams-section {
+    min-width: 0;
+    width: 100%;
+}
+
+.planner-progress-card {
+    min-width: 0;
+    width: 100%;
+    height: 100%;
 }
