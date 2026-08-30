@@ -1,4 +1,17 @@
 document.addEventListener("DOMContentLoaded", () => {
+    const examModal = document.getElementById("planner-exam-modal");
+    const examModalBackdrop = document.getElementById("planner-exam-modal-backdrop");
+    const examModalClose = document.getElementById("planner-exam-modal-close");
+    const examModalCancel = document.getElementById("planner-exam-modal-cancel");
+    const examForm = document.getElementById("planner-exam-form");
+
+    const addExamButton = document.getElementById("planner-add-exam");
+    const examList = document.getElementById("planner-exams-list");
+    const examEmptyState = document.getElementById("planner-exams-empty");
+
+    const examTitleInput = document.getElementById("planner-exam-title");
+    const examSubjectInput = document.getElementById("planner-exam-subject");
+    const examDateInput = document.getElementById("planner-exam-date");
     const taskList = document.getElementById("planner-task-list");
     const emptyState = document.getElementById("planner-empty-state");
     const addTaskButton = document.getElementById("planner-add-task");
@@ -323,6 +336,7 @@ document.addEventListener("DOMContentLoaded", () => {
         updateSubjectFilter();
         renderTasks();
         renderCalendar();
+        renderExams();
     };
 
     const toggleTask = (task) => {
@@ -601,4 +615,124 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     refreshPlanner();
+});
+function renderExams() {
+    const exams = CatalystData.getExams()
+        .filter(exam => {
+            const examDate = new Date(`${exam.date}T00:00:00`);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            return examDate >= today;
+        })
+        .sort((a, b) => a.date.localeCompare(b.date));
+
+    examList.querySelectorAll(".planner-exam-card").forEach(card => {
+        card.remove();
+    });
+
+    if (!exams.length) {
+        examEmptyState.hidden = false;
+        return;
+    }
+
+    examEmptyState.hidden = true;
+
+    exams.forEach(exam => {
+        const examDate = new Date(`${exam.date}T00:00:00`);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const daysRemaining = Math.ceil(
+            (examDate - today) / (1000 * 60 * 60 * 24)
+        );
+
+        const card = document.createElement("article");
+        card.className = "planner-exam-card";
+
+        card.innerHTML = `
+            <div class="planner-exam-card-content">
+                <span class="section-eyebrow">${exam.subject}</span>
+                <h3>${exam.topic}</h3>
+                <p>${formatExamDate(exam.date)}</p>
+            </div>
+
+            <div class="planner-exam-card-meta">
+                <span>
+                    ${daysRemaining === 0
+                        ? "Today"
+                        : `${daysRemaining} day${daysRemaining === 1 ? "" : "s"} left`}
+                </span>
+
+                <button
+                    type="button"
+                    class="btn btn-icon planner-delete-exam"
+                    data-exam-id="${exam.id}"
+                    aria-label="Delete ${exam.topic}">
+                    ×
+                </button>
+            </div>
+        `;
+
+        examList.appendChild(card);
+    });
+}
+function formatExamDate(dateString) {
+    const date = new Date(`${dateString}T00:00:00`);
+
+    return date.toLocaleDateString("en-IN", {
+        day: "numeric",
+        month: "short",
+        year: "numeric"
+    });
+}
+function openExamModal() {
+    examModal.hidden = false;
+    examModal.setAttribute("aria-hidden", "false");
+
+    examForm.reset();
+
+    requestAnimationFrame(() => {
+        examModal.classList.add("is-open");
+    });
+
+    examTitleInput.focus();
+}
+
+function closeExamModal() {
+    examModal.classList.remove("is-open");
+
+    examModal.setAttribute("aria-hidden", "true");
+
+    setTimeout(() => {
+        examModal.hidden = true;
+    }, 200);
+}
+addExamButton.addEventListener("click", openExamModal);
+examModalClose.addEventListener("click", closeExamModal);
+examModalCancel.addEventListener("click", closeExamModal);
+examModalBackdrop.addEventListener("click", closeExamModal);
+examForm.addEventListener("submit", event => {
+    event.preventDefault();
+
+    CatalystData.addExam({
+        topic: examTitleInput.value.trim(),
+        subject: examSubjectInput.value.trim(),
+        date: examDateInput.value
+    });
+
+    closeExamModal();
+    renderExams();
+});
+examList.addEventListener("click", event => {
+    const deleteButton = event.target.closest(".planner-delete-exam");
+
+    if (!deleteButton) {
+        return;
+    }
+
+    const examId = Number(deleteButton.dataset.examId);
+
+    CatalystData.deleteExam(examId);
+    renderExams();
 });

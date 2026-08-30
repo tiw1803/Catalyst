@@ -472,6 +472,32 @@ const CatalystData = {
 
         return newTask;
     },
+    getExams() {
+        return this.get().exams;
+    },
+    
+    addExam(exam) {
+        let newExam;
+    
+        this.update(data => {
+            newExam = {
+                id: Date.now(),
+                subject: exam.subject || "General",
+                topic: exam.topic || "Exam",
+                date: exam.date || this.getTodayDate()
+            };
+    
+            data.exams.push(newExam);
+        });
+    
+        return newExam;
+    },
+    
+    deleteExam(examId) {
+        return this.update(data => {
+            data.exams = data.exams.filter(exam => exam.id !== examId);
+        });
+    },
 
     deleteTask(taskId) {
         return this.update(data => {
